@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import {initialState,updateProfile,certified,normalizeAccount,socialPlatform,recommendation,campaigns,advance,balance,withdraw,saveAccount,makeProject,deliveryComplete,deliverables,moneyError,closedStages,notificationId} from './data';
+const fresh=initialState();assert.equal(fresh.verified,false);assert.equal(fresh.projects.length,0);assert.equal(balance(fresh),0);
+let s=initialState(true);s.certifications={X:normalizeAccount(s.profile.social)};assert(certified(s,'X'));assert(!certified(s,'YouTube'));
+let changed=updateProfile(s,{...s.profile,email:'changed@example.com'});assert(!changed.verified);assert.equal(changed.verifiedEmail,'creator@example.com');
+changed=updateProfile(s,{...s.profile,social:'https://youtube.com/@another'});assert(!certified(changed,'X'));assert(!certified(changed,'YouTube'));
+assert.equal(socialPlatform('https://youtube.com.evil.test/@demo'),'');assert.equal(socialPlatform('https://youtube.com/'),'');
+s.applicationDrafts={'dji-air':'A','dji-pocket':'B'};s.messageDrafts={'p-dji-air':'A','p-insta-outdoor':'B'};assert.notEqual(s.applicationDrafts['dji-air'],s.applicationDrafts['dji-pocket']);
+assert(recommendation(campaigns[0],s.profile).length>recommendation(campaigns[0],{...s.profile,topic:'美股',social:'https://x.com/demo'}).length);
+const p=makeProject('dji-air');assert(!deliveryComplete(p));p.items[deliverables(p.campaignId)[0]]='Video';assert(!deliveryComplete(p));p.items[deliverables(p.campaignId)[1]]='Photos';assert(deliveryComplete(p));
+s.projects.unshift(p);assert.throws(()=>advance(s,p.id,'paid'));let t=advance(s,p.id,'withdrawn');assert(closedStages.includes(t.projects[0].stage));assert.throws(()=>advance(t,p.id,'draft'));
+let c=initialState(true);const key=notificationId(c.projects[0]);c=advance(c,'p-dji-air','negotiating');assert.notEqual(key,notificationId(c.projects[0]));c=advance(c,'p-dji-air','confirm');c=advance(c,'p-dji-air','declined');assert(closedStages.includes(c.projects[0].stage));
+const a={method:'PayPal',name:'Demo',address:'demo@example.com',region:'中国'};s=initialState(true);s=saveAccount(s,a,null);assert.throws(()=>saveAccount(s,{...a,address:'DEMO@EXAMPLE.COM'},null));assert.equal(s.accounts.length,1);
+for(const n of [49,801,-1,NaN,100.001])assert.throws(()=>withdraw(s,n,a));s=withdraw(s,300,a);assert.equal(balance(s),500);s=saveAccount(s,{...a,address:'fixed@example.com'},0);assert.equal(s.withdrawals[0].account.address,'demo@example.com');s.withdrawals[0].status='failed';assert.equal(balance(s),800);s=withdraw(s,300,s.accounts[0]);assert.equal(s.withdrawals[0].id,'WD-0002');assert.equal(balance(s),500);assert(moneyError('900',800));assert.equal(moneyError('50.25',800),'');
+console.log('PASS: onboarding, bound identity, platform checks, isolated drafts, matching, multi-item delivery, terminal transitions, notifications, account edits, duplicates, withdrawal failure and retry.');
