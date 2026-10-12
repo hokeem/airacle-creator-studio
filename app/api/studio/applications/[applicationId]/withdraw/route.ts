@@ -1,0 +1,1 @@
+import { key,response,studio } from "../../../../../studio-server/runtime";type C={params:Promise<{applicationId:string}>};export async function POST(r:Request,{params}:C){const x=await studio(),p=await params;return response(x.service.withdrawApplication(x.actor,p.applicationId,key(r)))}

@@ -1,0 +1,1 @@
+import { body,key,response,studio } from "../../../studio-server/runtime";export async function GET(){const x=await studio();return response(x.service.getProfile(x.actor))}export async function PATCH(r:Request){const x=await studio();return response(body(r).then(v=>x.service.updateProfile(x.actor,v,key(r))))}

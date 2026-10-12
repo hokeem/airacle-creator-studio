@@ -18,7 +18,7 @@ export function createAdminStore():AdminStore{
  sample.withdrawals=[{id:'SAMPLE-WD-001',amount:200,account:sample.accounts[0],createdAt:new Date().toISOString(),status:'processing'}];
  return {schema:1,catalog:defaults.map(c=>({...c})),samples:sample,names:Object.fromEntries(sample.projects.map((p,i)=>[p.id,['陈舟 · 航拍旅行','林可 · 城市影像','Evan · 户外记录','许夏 · 数码装备','Lin Studio · 创作效率'][i]])),resolved:{},log:[]};
 }
-export function loadAdmin():AdminStore{try{const data=JSON.parse(localStorage.getItem(ADMIN_KEY)||'null');if(data?.schema===1&&Array.isArray(data.catalog)&&data.samples)return {...data,catalog:data.catalog.map((c:ManagedCampaign)=>({...c,image:c.image===undefined?defaults.find(d=>d.id===c.id)?.image:c.image}))}}catch{}return createAdminStore()}
+export function loadAdmin():AdminStore{try{const data=JSON.parse(localStorage.getItem(ADMIN_KEY)||'null');if(data?.schema===1&&Array.isArray(data.catalog)&&data.samples){const catalog=data.catalog.map((c:ManagedCampaign)=>({...c,image:c.image===undefined?defaults.find(d=>d.id===c.id)?.image:c.image}));for(const seed of defaults)if(!catalog.some((c:ManagedCampaign)=>c.id===seed.id))catalog.push({...seed});return {...data,catalog}}}catch{}return createAdminStore()}
 export function loadCreator():AppState{try{const data=JSON.parse(localStorage.getItem(CREATOR_KEY)||'null');if(data?.schema===2&&data.state)return data.state}catch{}return initialState()}
 export function syncCatalog(catalog=loadAdmin().catalog){campaigns.splice(0,campaigns.length,...catalog)}
 export function isPublished(c:Campaign&{listing?:Listing}){return (c as ManagedCampaign).listing===undefined||(c as ManagedCampaign).listing==='published'}

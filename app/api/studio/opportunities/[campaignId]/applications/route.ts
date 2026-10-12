@@ -1,0 +1,1 @@
+import { body,key,response,studio } from "../../../../../studio-server/runtime";type C={params:Promise<{campaignId:string}>};export async function POST(r:Request,{params}:C){const x=await studio(),p=await params;return response(body(r).then(v=>x.service.submitApplication(x.actor,p.campaignId,v,key(r))))}

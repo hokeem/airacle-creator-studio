@@ -1,0 +1,1 @@
+ALTER TABLE `studio_idempotency` ADD `state` text DEFAULT 'completed' NOT NULL;
