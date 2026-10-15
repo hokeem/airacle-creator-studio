@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Airacle · 达人合作工作台",
-  description: "发现适合你的品牌合作，一站完成报名、交付与结算。交互演示站。",
+  title: "Airacle · Creator Studio",
+  description: "Discover brand partnerships and manage applications, deliverables and payments in one creator studio.",
   other: {
     "codex-preview": "development",
   },
@@ -19,7 +19,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-CN">
+    <html lang="en">
       <body className="antialiased">{children}</body>
     </html>
   );

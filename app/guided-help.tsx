@@ -1,10 +1,11 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
 import {Compass} from 'lucide-react';
+import {translateText} from './i18n';
 
 export type TutorialStep={title:string;body:string;target:string};
 type Box={x:number;y:number;width:number;height:number};
-function targetFor(selector?:string){if(!selector)return null;if(selector.startsWith('button='))return Array.from(document.querySelectorAll<HTMLElement>('button')).find(el=>!el.closest('.spotlight-layer')&&el.textContent?.trim()===selector.slice(7))||null;return document.querySelector<HTMLElement>(selector)}
+function targetFor(selector?:string){if(!selector)return null;if(selector.startsWith('button=')){const source=selector.slice(7);const label=document.documentElement.lang==='en'?translateText(source):source;return Array.from(document.querySelectorAll<HTMLElement>('button')).find(el=>!el.closest('.spotlight-layer')&&el.textContent?.trim()===label)||null}return document.querySelector<HTMLElement>(selector)}
 export default function GuidedHelp({current,index,total,onSkip}:{current:TutorialStep;index:number;total:number;onSkip:()=>void}){
  const [box,setBox]=useState<Box|null>(null);const [viewport,setViewport]=useState({width:0,height:0});const [height,setHeight]=useState(210);
  const layer=useRef<HTMLDivElement>(null);const card=useRef<HTMLElement>(null);const skip=useRef(onSkip);skip.current=onSkip;
